@@ -28,12 +28,12 @@ namespace PerfIt.Handlers
             get { return CounterTypes.AverageTimeTaken; }
         }
 
-        protected override void OnRequestStarting(HttpRequestMessage request, PerfItContext context)
+        protected override void StartCounterRecording(PerfItContext context)
         {
             context.Data.Add(AverageTimeTakenTicksKey + _instanceName, Stopwatch.StartNew());
         }
 
-        protected override void OnRequestEnding(HttpResponseMessage response, PerfItContext context)
+        protected override void StopCounterRecording(PerfItContext context)
         {
             var sw = (Stopwatch)context.Data[AverageTimeTakenTicksKey + _instanceName];
             sw.Stop();

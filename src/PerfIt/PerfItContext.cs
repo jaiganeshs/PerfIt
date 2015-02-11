@@ -9,14 +9,14 @@ namespace PerfIt
     public class PerfItContext
     {
 
-        public PerfItContext()
+        public PerfItContext(IEnumerable<PerfItCounterContext> counters)
         {
             Data = new Dictionary<string, object>();    
-            CountersToRun = new ConcurrentBag<string>();
+            Counters = counters;
         }
 
-        public PerfItFilterAttribute Filter { get; set; }
         public Dictionary<string, object> Data { get; private set; }
-        public ConcurrentBag<string> CountersToRun { get; private set; } 
+
+        public IEnumerable<PerfItCounterContext> Counters { get; set; } 
     }
 }

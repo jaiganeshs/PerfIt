@@ -27,12 +27,12 @@ namespace PerfIt.Handlers
             get { return CounterTypes.LastOperationExecutionTime; }
         }
 
-        protected override void OnRequestStarting(HttpRequestMessage request, PerfItContext context)
+        protected override void StartCounterRecording(PerfItContext context)
         {
             context.Data.Add(TimeTakenTicksKey + _instanceName, Stopwatch.StartNew());
         }
 
-        protected override void OnRequestEnding(HttpResponseMessage response, PerfItContext context)
+        protected override void StopCounterRecording(PerfItContext context)
         {
             var sw = (Stopwatch)context.Data[TimeTakenTicksKey + _instanceName];
             sw.Stop();

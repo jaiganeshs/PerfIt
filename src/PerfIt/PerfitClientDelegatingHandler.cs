@@ -71,12 +71,13 @@ namespace PerfIt
                 contexts.Add(ctx.Value);
             }
 
-            request.Properties.Add(Constants.PerfItKey, new PerfItContext());
+            var perfItContext = new PerfItContext();
+            request.Properties.Add(Constants.PerfItKey, perfItContext);
             request.Properties.Add(Constants.PerfItPublishErrorsKey, this.RaisePublishErrors);
             
             foreach (var context in contexts)
             {
-                context.Handler.OnRequestStarting(request);
+                context.Handler.OnRequestStarting(perfItContext);
             }
 
             return base.SendAsync(request, cancellationToken)
@@ -87,7 +88,7 @@ namespace PerfIt
 
                                 foreach (var counter in contexts)
                                 {
-                                    counter.Handler.OnRequestEnding(response);
+                                    counter.Handler.OnRequestEnding(perfItContext);
                                 }
                             }
                             catch (Exception e)

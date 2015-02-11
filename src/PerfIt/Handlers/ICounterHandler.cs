@@ -10,8 +10,8 @@ namespace PerfIt
     public interface ICounterHandler : IDisposable
     {
         string CounterType { get; }
-        void OnRequestStarting(HttpRequestMessage request);
-        void OnRequestEnding(HttpResponseMessage response);
+        void OnRequestStarting(PerfItContext context);
+        void OnRequestEnding(PerfItContext context);
 
         string Name { get; }
 

@@ -38,16 +38,14 @@ namespace PerfIt.Handlers
         /// <summary>
         /// called when request arrives in delegating handler
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="context"></param> 
-        protected abstract void OnRequestStarting(HttpRequestMessage request, PerfItContext context);
-        
+        /// <param name="context"></param>
+        protected abstract void StartCounterRecording(PerfItContext context);
+
         /// <summary>
         /// called as the async continuation on the delegating handler (when response is sent back)
         /// </summary>
-        /// <param name="response"></param>
         /// <param name="context"></param>
-        protected abstract void OnRequestEnding(HttpResponseMessage response, PerfItContext context);
+        protected abstract void StopCounterRecording(PerfItContext context);
 
         /// <summary>
         /// 
@@ -62,44 +60,6 @@ namespace PerfIt.Handlers
         /// <param name="filter">Filter attribute defined</param>
         /// <returns></returns>
         protected abstract CounterCreationData[] DoGetCreationData();
-
-        public void OnRequestStarting(HttpRequestMessage request)
-        {
-            if (request.Properties.ContainsKey(Constants.PerfItKey))
-            {
-                try
-                {
-                    OnRequestStarting(request, (PerfItContext)request.Properties[Constants.PerfItKey]);
-
-                }
-                catch (InvalidOperationException exception)
-                {
-
-                    Trace.TraceError(exception.ToString());
-                    BuildCounters(true);
-                    OnRequestStarting(request, (PerfItContext)request.Properties[Constants.PerfItKey]);                    
-                }
-            }
-        }
-
-        public void OnRequestEnding(HttpResponseMessage response)
-        {
-            if (response.RequestMessage.Properties.ContainsKey(Constants.PerfItKey))
-            {
-                try
-                {
-                    OnRequestEnding(response, (PerfItContext)response.RequestMessage.Properties[Constants.PerfItKey]);
-
-                }
-                catch (InvalidOperationException exception)
-                {
-                    
-                    Trace.TraceError(exception.ToString());
-                    BuildCounters(true);
-                    OnRequestEnding(response, (PerfItContext)response.RequestMessage.Properties[Constants.PerfItKey]);
-                }
-            }
-        }
 
         public string Name { get; private set; }
         public string UniqueName { get { return _uniqueName; } }
@@ -121,7 +81,41 @@ namespace PerfIt.Handlers
                 (newName ? "_" + Guid.NewGuid().ToString("N").Substring(6) : string.Empty);
         }
 
-      
 
+        public void OnRequestStarting(PerfItContext context)
+        {
+            if (null == context) return;
+
+            try
+            {
+                this.StartCounterRecording(context);
+
+            }
+            catch (InvalidOperationException exception)
+            {
+
+                Trace.TraceError(exception.ToString());
+                BuildCounters(true);
+                this.StartCounterRecording(context);
+            }
+        }
+
+        public void OnRequestEnding(PerfItContext context)
+        {
+            if (null == context) return;
+
+            try
+            {
+                this.StopCounterRecording(context);
+
+            }
+            catch (InvalidOperationException exception)
+            {
+
+                Trace.TraceError(exception.ToString());
+                BuildCounters(true);
+                this.StopCounterRecording(context);
+            }
+        }
     }
 }
